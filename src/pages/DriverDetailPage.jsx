@@ -72,16 +72,16 @@ export default function DriverDetailPage() {
   if (!driver) return <EmptyState message="Driver not found." />;
 
   const statCards = [
-    { label: 'Races',         value: stats.races,         icon: '🏁' },
-    { label: 'Championships', value: stats.championships,  icon: '🏆', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
-    { label: 'Wins',          value: stats.wins,           icon: '🥇' },
-    { label: 'Podiums',       value: stats.podiums,        icon: '🏅' },
-    { label: 'Poles',         value: stats.poles,          icon: '⚡' },
-    { label: 'Fastest Laps',  value: stats.fastestLaps,    icon: '⏱' },
-    { label: 'Points',        value: stats.points,         icon: '📊' },
-    { label: 'DNFs',          value: stats.dnfs,           icon: '🔧' },
-    { label: 'DSQ',           value: stats.dsq,            icon: '🚫' },
-    { label: 'DNS',           value: stats.dns,            icon: '⛔' },
+    { label: 'Races',         value: stats.races,         icon: 'flag' },
+    { label: 'Championships', value: stats.championships,  icon: 'emoji_events', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
+    { label: 'Wins',          value: stats.wins,           icon: 'trophy' },
+    { label: 'Podiums',       value: stats.podiums,        icon: 'social_leaderboard' },
+    { label: 'Poles',         value: stats.poles,          icon: 'electric_bolt' },
+    { label: 'Fastest Laps',  value: stats.fastestLaps,    icon: 'timer' },
+    { label: 'Points',        value: stats.points,         icon: 'bar_chart' },
+    { label: 'DNFs',          value: stats.dnfs,           icon: 'build' },
+    { label: 'DSQ',           value: stats.dsq,            icon: 'gavel' },
+    { label: 'DNS',           value: stats.dns,            icon: 'block' },
   ];
 
   return (
@@ -119,7 +119,7 @@ export default function DriverDetailPage() {
       <div className="stat-grid">
         {statCards.map(({ label, value, icon, highlight, sub }) => (
           <div key={label} className={`stat-card${highlight ? ' highlight' : ''}`}>
-            <div className="icon">{icon}</div>
+            <div className="icon"><span className="material-symbols-rounded" style={{ fontSize: 20 }}>{icon}</span></div>
             <div className="val">{value}</div>
             <div className="lbl">{label}</div>
             {sub && <div className="sub">{sub}</div>}

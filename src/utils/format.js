@@ -27,7 +27,7 @@ const NATIONALITY_CODE = {
   Argentine: 'ar', 'New Zealander': 'nz', Belgian: 'be',
   Swedish: 'se', Hungarian: 'hu', Russian: 'ru', Portuguese: 'pt',
   Colombian: 'co', Venezuelan: 've', Indonesian: 'id', Indian: 'in',
-  Irish: 'ie', Czech: 'cz', South African: 'za',
+  Irish: 'ie', Czech: 'cz', 'South African': 'za',
 };
 
 export function flagUrl(nationality, size = 24) {
