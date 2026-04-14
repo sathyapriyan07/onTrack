@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const adminLinks = [
-  { to: '/admin', label: '📊 Dashboard' },
-  { to: '/admin/import', label: '⬇️ Import Data' },
-  { to: '/admin/drivers', label: '👤 Drivers' },
-  { to: '/admin/constructors', label: '🏎 Constructors' },
-  { to: '/admin/circuits', label: '🏁 Circuits' },
-  { to: '/admin/seasons', label: '📅 Seasons' },
-  { to: '/admin/races', label: '🏆 Races' },
-  { to: '/admin/results', label: '📋 Results' },
+  { to: '/admin', label: 'Dashboard' },
+  { to: '/admin/import', label: 'Import Data' },
+  { to: '/admin/drivers', label: 'Drivers' },
+  { to: '/admin/constructors', label: 'Constructors' },
+  { to: '/admin/circuits', label: 'Circuits' },
+  { to: '/admin/seasons', label: 'Seasons' },
+  { to: '/admin/races', label: 'Races' },
+  { to: '/admin/results', label: 'Results' },
 ];
 
 export function AdminLayout({ children }) {
@@ -30,15 +30,18 @@ export function AdminLayout({ children }) {
             {label}
           </Link>
         ))}
-        <Link to="/" style={{ marginTop: 'auto', color: '#aaa', paddingTop: '1rem' }} onClick={() => setSidebarOpen(false)}>
+        <Link
+          to="/"
+          style={{ marginTop: 'auto', color: 'var(--text3)', paddingTop: '1rem' }}
+          onClick={() => setSidebarOpen(false)}
+        >
           ← Back to Site
         </Link>
       </aside>
 
       <main className="admin-main">{children}</main>
 
-      {/* Mobile sidebar toggle */}
-      <button className="admin-toggle" onClick={() => setSidebarOpen((o) => !o)} aria-label="Toggle sidebar">
+      <button className="admin-toggle" onClick={() => setSidebarOpen(o => !o)} aria-label="Toggle sidebar">
         {sidebarOpen ? '✕' : '☰'}
       </button>
     </div>

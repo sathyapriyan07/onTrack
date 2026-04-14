@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Icon } from './Icons';
 
 const navLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/drivers', label: 'Drivers' },
-  { to: '/constructors', label: 'Constructors' },
-  { to: '/circuits', label: 'Circuits' },
-  { to: '/standings', label: 'Standings' },
-  { to: '/seasons', label: 'Seasons' },
+  { to: '/', label: 'Home', icon: 'home' },
+  { to: '/drivers', label: 'Drivers', icon: 'person' },
+  { to: '/constructors', label: 'Constructors', icon: 'directions_car' },
+  { to: '/circuits', label: 'Circuits', icon: 'route' },
+  { to: '/standings', label: 'Standings', icon: 'leaderboard' },
+  { to: '/seasons', label: 'Seasons', icon: 'calendar_month' },
 ];
 
 export function Navbar() {
@@ -20,15 +21,13 @@ export function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <Link to="/" className="navbar-brand" onClick={close}>🏎 onTRACK</Link>
+        <Link to="/" className="navbar-brand" onClick={close}>
+          on<span>TRACK</span>
+        </Link>
 
         <div className="navbar-links">
           {navLinks.map(({ to, label }) => (
-            <Link
-              key={to}
-              to={to}
-              className={pathname === to ? 'active-link' : ''}
-            >
+            <Link key={to} to={to} className={pathname === to ? 'active-link' : ''}>
               {label}
             </Link>
           ))}
@@ -38,18 +37,21 @@ export function Navbar() {
         <div className="navbar-actions">
           {session
             ? <button className="sign-out" onClick={signOut}>Sign Out</button>
-            : <Link to="/login">Login</Link>
+            : <Link to="/login" style={{ color: 'var(--text2)', fontSize: '0.85rem', fontWeight: 500, padding: '0.4rem 0.75rem', borderRadius: 8 }}>Login</Link>
           }
         </div>
 
-        <button className="hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-          {open ? '✕' : '☰'}
+        <button className="hamburger" onClick={() => setOpen(o => !o)} aria-label="Menu">
+          <Icon name={open ? 'close' : 'menu'} size={22} />
         </button>
       </nav>
 
       <div className={`mobile-menu${open ? ' open' : ''}`}>
-        {navLinks.map(({ to, label }) => (
-          <Link key={to} to={to} onClick={close}>{label}</Link>
+        {navLinks.map(({ to, label, icon }) => (
+          <Link key={to} to={to} onClick={close} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon name={icon} size={18} style={{ color: 'var(--text3)' }} />
+            {label}
+          </Link>
         ))}
         {isAdmin && <Link to="/admin" className="admin-link" onClick={close}>Admin</Link>}
         {session

@@ -4,7 +4,8 @@ import { useQuery } from '../hooks/useQuery';
 import { useDriverStats } from '../hooks/useDriverStats';
 import { db } from '../services/db';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
-import { formatDate, flagEmoji, positionSuffix } from '../utils/format';
+import { formatDate, positionSuffix, teamColor } from '../utils/format';
+import { Flag, Icon } from '../components/Icons';
 
 function useTeamTimeline(results = []) {
   return useMemo(() => {
@@ -71,40 +72,46 @@ export default function DriverDetailPage() {
   if (!driver) return <EmptyState message="Driver not found." />;
 
   const statCards = [
-    { label: 'Races',         value: stats.races,        icon: '🏁' },
-    { label: 'Championships', value: stats.championships, icon: '🏆', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
-    { label: 'Wins',          value: stats.wins,          icon: '🥇' },
-    { label: 'Podiums',       value: stats.podiums,       icon: '🏅' },
-    { label: 'Poles',         value: stats.poles,         icon: '⚡' },
-    { label: 'Fastest Laps',  value: stats.fastestLaps,   icon: '⏱' },
-    { label: 'Points',        value: stats.points,        icon: '📊' },
-    { label: 'DNFs',          value: stats.dnfs,          icon: '🔧' },
-    { label: 'DSQ',           value: stats.dsq,           icon: '🚫' },
-    { label: 'DNS',           value: stats.dns,           icon: '⛔' },
+    { label: 'Races',         value: stats.races,         icon: '🏁' },
+    { label: 'Championships', value: stats.championships,  icon: '🏆', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
+    { label: 'Wins',          value: stats.wins,           icon: '🥇' },
+    { label: 'Podiums',       value: stats.podiums,        icon: '🏅' },
+    { label: 'Poles',         value: stats.poles,          icon: '⚡' },
+    { label: 'Fastest Laps',  value: stats.fastestLaps,    icon: '⏱' },
+    { label: 'Points',        value: stats.points,         icon: '📊' },
+    { label: 'DNFs',          value: stats.dnfs,           icon: '🔧' },
+    { label: 'DSQ',           value: stats.dsq,            icon: '🚫' },
+    { label: 'DNS',           value: stats.dns,            icon: '⛔' },
   ];
 
   return (
     <div className="page">
       {/* Header */}
-      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap' }}>
         {driver.image_url && (
           <img src={driver.image_url} alt={driver.family_name}
-            style={{ width: 120, height: 150, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
+            style={{ width: 120, height: 150, objectFit: 'cover', objectPosition: 'top', borderRadius: 14, flexShrink: 0, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} />
         )}
         <div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#e10600', lineHeight: 1 }}>
-            #{driver.permanent_number || '—'}
-          </div>
-          <h1 style={{ margin: '4px 0' }}>{driver.given_name} {driver.family_name}</h1>
+          {driver.permanent_number && (
+            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent)', lineHeight: 1, letterSpacing: '-0.04em' }}>
+              #{driver.permanent_number}
+            </div>
+          )}
+          <h1 style={{ margin: '6px 0 8px' }}>{driver.given_name} {driver.family_name}</h1>
           {driver.code && (
-            <span style={{ background: '#15151e', color: '#fff', padding: '2px 8px', borderRadius: 3, fontWeight: 700, fontSize: '0.85rem' }}>
+            <span style={{ background: 'var(--surface2)', color: 'var(--text2)', padding: '3px 10px', borderRadius: 8, fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.06em' }}>
               {driver.code}
             </span>
           )}
-          <p style={{ color: '#666', margin: '8px 0 0' }}>
-            {flagEmoji(driver.nationality)} {driver.nationality} · Born {formatDate(driver.date_of_birth)}
-          </p>
-          {driver.bio && <p style={{ maxWidth: 560, color: '#444', lineHeight: 1.6, marginTop: 8 }}>{driver.bio}</p>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '10px 0 0' }}>
+            <Flag nationality={driver.nationality} height={14} />
+            <span style={{ color: 'var(--text3)', fontSize: '0.9rem' }}>{driver.nationality}</span>
+            <span style={{ color: 'var(--text3)', fontSize: '0.9rem' }}>·</span>
+            <Icon name="cake" size={14} style={{ color: 'var(--text3)' }} />
+            <span style={{ color: 'var(--text3)', fontSize: '0.9rem' }}>{formatDate(driver.date_of_birth)}</span>
+          </div>
+          {driver.bio && <p style={{ maxWidth: 560, color: 'var(--text2)', lineHeight: 1.7, marginTop: 10, fontSize: '0.9rem' }}>{driver.bio}</p>}
         </div>
       </div>
 
@@ -123,10 +130,10 @@ export default function DriverDetailPage() {
       {/* Tabs */}
       <div className="tabs">
         <button className={`tab-btn${tab === 'results' ? ' active' : ''}`} onClick={() => setTab('results')}>
-          📋 Results ({sorted.length})
+          <Icon name="format_list_bulleted" size={16} /> Results ({sorted.length})
         </button>
         <button className={`tab-btn${tab === 'teams' ? ' active' : ''}`} onClick={() => setTab('teams')}>
-          🏎 Teams ({current.length + previous.length})
+          <Icon name="directions_car" size={16} /> Teams ({current.length + previous.length})
         </button>
       </div>
 
@@ -140,8 +147,7 @@ export default function DriverDetailPage() {
           {current.length === 0 ? <EmptyState message="No current team." /> : (
             <div className="driver-grid" style={{ marginBottom: '1.5rem' }}>
               {current.map(({ constructor: c, seasons: cs }) => (
-                <Link key={c.constructor_id} to={`/constructors/${c.constructor_id}`}
-                  className="driver-card current">
+                <Link key={c.constructor_id} to={`/constructors/${c.constructor_id}`} className="driver-card current">
                   {c.logo_url
                     ? <img src={c.logo_url} alt={c.name} style={{ width: 52, height: 32, objectFit: 'contain' }} />
                     : <span style={{ fontSize: '1.4rem' }}>🏎</span>}
@@ -199,16 +205,16 @@ export default function DriverDetailPage() {
                 </thead>
                 <tbody>
                   {filtered.map((r) => (
-                    <tr key={r.id} style={r.position === 1 ? { background: '#fff8f0' } : r.status === 'Disqualified' ? { background: '#fff0f0' } : {}}>
+                    <tr key={r.id} style={r.position === 1 ? { background: 'rgba(225,6,0,0.06)' } : r.status === 'Disqualified' ? { background: 'rgba(225,6,0,0.04)' } : {}}>
                       <td><Link to={`/seasons/${r.races?.seasons?.year}`} className="red-link">{r.races?.seasons?.year}</Link></td>
-                      <td style={{ color: '#888' }}>{r.races?.round}</td>
+                      <td style={{ color: 'var(--text3)' }}>{r.races?.round}</td>
                       <td><Link to={`/races/${r.race_id}`} className="red-link">{r.races?.race_name}</Link></td>
                       <td><Link to={`/constructors/${r.constructors?.constructor_id}`} className="red-link">{r.constructors?.name}</Link></td>
-                      <td className="num" style={{ color: '#888' }}>{r.grid ?? '—'}</td>
+                      <td className="num" style={{ color: 'var(--text3)' }}>{r.grid ?? '—'}</td>
                       <td className="num" style={posStyle(r.position)}>{positionSuffix(r.position)}</td>
-                      <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? '#e10600' : '#aaa' }}>{r.points}</td>
+                      <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? 'var(--accent)' : 'var(--text3)' }}>{r.points}</td>
                       <td className={statusClass(r.status)}>{r.status}</td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{r.fastest_lap_time || '—'}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text3)' }}>{r.fastest_lap_time || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -222,9 +228,9 @@ export default function DriverDetailPage() {
 }
 
 function posStyle(pos) {
-  if (pos === 1) return { color: '#e10600', fontWeight: 700 };
-  if (pos <= 3) return { color: '#c47d00', fontWeight: 700 };
-  return { fontWeight: 600 };
+  if (pos === 1) return { color: 'var(--accent)', fontWeight: 700 };
+  if (pos <= 3) return { color: '#ffd60a', fontWeight: 700 };
+  return { fontWeight: 600, color: 'var(--text)' };
 }
 function statusClass(s) {
   if (!s || s === 'Finished' || s?.startsWith('+')) return 'status-ok';

@@ -4,6 +4,7 @@ import { useQuery } from '../hooks/useQuery';
 import { db } from '../services/db';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
 import { formatDate, positionSuffix } from '../utils/format';
+import { Icon } from '../components/Icons';
 
 function PositionDelta({ grid, position }) {
   if (grid == null || position == null || grid === 0) return <span className="delta-same">—</span>;
@@ -34,12 +35,24 @@ export default function RaceDetailPage() {
 
   return (
     <div className="page">
-      <p style={{ color: '#888', fontSize: '0.88rem', marginBottom: 4 }}>
-        <Link to={`/seasons/${race.seasons?.year}`} className="red-link">{race.seasons?.year}</Link> / Round {race.round}
-      </p>
-      <h1 style={{ marginBottom: 6 }}>{race.race_name}</h1>
-      <p style={{ color: '#666', marginBottom: 2 }}>📍 {race.circuits?.name}, {race.circuits?.locality}, {race.circuits?.country}</p>
-      <p style={{ color: '#666', marginBottom: '1.25rem' }}>📅 {formatDate(race.date)}</p>
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+          <Link to={`/seasons/${race.seasons?.year}`} className="red-link">{race.seasons?.year}</Link>
+          <span style={{ color: 'var(--text3)', margin: '0 6px' }}>·</span>
+          Round {race.round}
+        </div>
+        <h1 style={{ margin: '0 0 10px' }}>{race.race_name}</h1>
+        <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text3)', fontSize: '0.88rem' }}>
+            <Icon name="location_on" size={15} style={{ color: 'var(--text3)' }} />
+            {race.circuits?.name}, {race.circuits?.locality}, {race.circuits?.country}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text3)', fontSize: '0.88rem' }}>
+            <Icon name="calendar_today" size={15} style={{ color: 'var(--text3)' }} />
+            {formatDate(race.date)}
+          </span>
+        </div>
+      </div>
 
       <div className="tabs">
         {tabs.map(({ key, label }) => (
@@ -61,17 +74,17 @@ export default function RaceDetailPage() {
               </thead>
               <tbody>
                 {(results || []).map((r) => (
-                  <tr key={r.id} style={r.position === 1 ? { background: '#fff8f0' } : {}}>
-                    <td style={{ fontWeight: 700 }}>{positionSuffix(r.position)}</td>
+                  <tr key={r.id} style={r.position === 1 ? { background: 'rgba(225,6,0,0.06)' } : {}}>
+                    <td style={{ fontWeight: 700, color: r.position === 1 ? 'var(--accent)' : r.position <= 3 ? '#ffd60a' : 'var(--text)' }}>{positionSuffix(r.position)}</td>
                     <td><Link to={`/drivers/${r.drivers?.driver_id}`} className="red-link">{r.drivers?.given_name} {r.drivers?.family_name}</Link></td>
-                    <td>{r.constructors?.name}</td>
-                    <td className="num" style={{ color: '#888' }}>{r.grid ?? '—'}</td>
+                    <td style={{ color: 'var(--text2)' }}>{r.constructors?.name}</td>
+                    <td className="num" style={{ color: 'var(--text3)' }}>{r.grid ?? '—'}</td>
                     <td style={{ textAlign: 'center' }}><PositionDelta grid={r.grid} position={r.position} /></td>
-                    <td className="num">{r.laps ?? '—'}</td>
-                    <td>{r.time || '—'}</td>
-                    <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? '#e10600' : '#aaa' }}>{r.points}</td>
-                    <td style={{ fontSize: '0.78rem', color: '#666' }}>{r.status}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{r.fastest_lap_time || '—'}</td>
+                    <td className="num" style={{ color: 'var(--text2)' }}>{r.laps ?? '—'}</td>
+                    <td style={{ color: 'var(--text2)', fontFamily: 'monospace', fontSize: '0.82rem' }}>{r.time || '—'}</td>
+                    <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? 'var(--accent)' : 'var(--text3)' }}>{r.points}</td>
+                    <td className={statusClass(r.status)}>{r.status}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text3)' }}>{r.fastest_lap_time || '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -88,12 +101,12 @@ export default function RaceDetailPage() {
               <tbody>
                 {(qualifying || []).map((r) => (
                   <tr key={r.id}>
-                    <td style={{ fontWeight: 700 }}>{r.position}</td>
+                    <td style={{ fontWeight: 700, color: r.position === 1 ? 'var(--accent)' : 'var(--text)' }}>{r.position}</td>
                     <td><Link to={`/drivers/${r.drivers?.driver_id}`} className="red-link">{r.drivers?.given_name} {r.drivers?.family_name}</Link></td>
-                    <td>{r.constructors?.name}</td>
-                    <td style={{ fontFamily: 'monospace' }}>{r.q1 || '—'}</td>
-                    <td style={{ fontFamily: 'monospace' }}>{r.q2 || '—'}</td>
-                    <td style={{ fontFamily: 'monospace' }}>{r.q3 || '—'}</td>
+                    <td style={{ color: 'var(--text2)' }}>{r.constructors?.name}</td>
+                    <td style={{ fontFamily: 'monospace', color: 'var(--text2)' }}>{r.q1 || '—'}</td>
+                    <td style={{ fontFamily: 'monospace', color: 'var(--text2)' }}>{r.q2 || '—'}</td>
+                    <td style={{ fontFamily: 'monospace', color: r.q3 ? 'var(--accent)' : 'var(--text3)' }}>{r.q3 || '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -112,14 +125,14 @@ export default function RaceDetailPage() {
               <tbody>
                 {(sprint || []).map((r) => (
                   <tr key={r.id}>
-                    <td style={{ fontWeight: 700 }}>{positionSuffix(r.position)}</td>
+                    <td style={{ fontWeight: 700, color: r.position === 1 ? 'var(--accent)' : 'var(--text)' }}>{positionSuffix(r.position)}</td>
                     <td><Link to={`/drivers/${r.drivers?.driver_id}`} className="red-link">{r.drivers?.given_name} {r.drivers?.family_name}</Link></td>
-                    <td>{r.constructors?.name}</td>
-                    <td className="num" style={{ color: '#888' }}>{r.grid ?? '—'}</td>
+                    <td style={{ color: 'var(--text2)' }}>{r.constructors?.name}</td>
+                    <td className="num" style={{ color: 'var(--text3)' }}>{r.grid ?? '—'}</td>
                     <td style={{ textAlign: 'center' }}><PositionDelta grid={r.grid} position={r.position} /></td>
-                    <td className="num">{r.laps ?? '—'}</td>
-                    <td>{r.time || '—'}</td>
-                    <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? '#e10600' : '#aaa' }}>{r.points}</td>
+                    <td className="num" style={{ color: 'var(--text2)' }}>{r.laps ?? '—'}</td>
+                    <td style={{ color: 'var(--text2)', fontFamily: 'monospace', fontSize: '0.82rem' }}>{r.time || '—'}</td>
+                    <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? 'var(--accent)' : 'var(--text3)' }}>{r.points}</td>
                   </tr>
                 ))}
               </tbody>
@@ -129,4 +142,11 @@ export default function RaceDetailPage() {
       )}
     </div>
   );
+}
+
+function statusClass(s) {
+  if (!s || s === 'Finished' || s?.startsWith('+')) return 'status-ok';
+  if (s === 'Disqualified') return 'status-dsq';
+  if (s === 'Did not start' || s === 'Did not qualify') return 'status-dns';
+  return 'status-dnf';
 }

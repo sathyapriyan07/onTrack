@@ -5,6 +5,7 @@ import { db } from '../services/db';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
 import { SearchFilter } from '../components/SearchFilter';
 import { Pagination } from '../components/Pagination';
+import { Icon } from '../components/Icons';
 
 export default function CircuitsPage() {
   const { data: circuits, loading, error } = useQuery(() => db.circuits.getAll());
@@ -13,13 +14,13 @@ export default function CircuitsPage() {
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
-  const filtered = (circuits || []).filter((c) =>
+  const filtered = (circuits || []).filter(c =>
     `${c.name} ${c.locality} ${c.country}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="page">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: 16 }}>
         <h1 style={{ margin: 0 }}>Circuits</h1>
         <SearchFilter placeholder="Search circuits..." onFilter={setSearch} />
       </div>
@@ -29,17 +30,23 @@ export default function CircuitsPage() {
           items={filtered}
           pageSize={24}
           renderTable={(paged) => (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 1, background: '#e5e5e5', border: '1px solid #e5e5e5' }}>
-              {paged.map((c) => (
-                <Link key={c.id} to={`/circuits/${c.circuit_id}`} style={card}>
-                  <div style={iconWrap}>🏁</div>
-                  <div style={{ padding: '0.85rem 1rem' }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginBottom: 4 }}>{c.name}</div>
-                    <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: 4 }}>
-                      📍 {c.locality}{c.country ? `, ${c.country}` : ''}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+              {paged.map(c => (
+                <Link key={c.id} to={`/circuits/${c.circuit_id}`} style={card}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+                >
+                  <div style={iconArea}>
+                    <Icon name="route" size={28} style={{ color: 'var(--text3)' }} />
+                  </div>
+                  <div style={{ padding: '1rem 1.25rem' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--white)', marginBottom: 6, letterSpacing: '-0.01em' }}>{c.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.82rem', color: 'var(--text2)', marginBottom: c.lat ? 5 : 0 }}>
+                      <Icon name="location_on" size={14} style={{ color: 'var(--text3)' }} />
+                      {c.locality}{c.country ? `, ${c.country}` : ''}
                     </div>
                     {c.lat && c.long && (
-                      <div style={{ fontSize: '0.72rem', color: '#aaa', fontFamily: 'monospace' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text3)', fontFamily: 'monospace' }}>
                         {parseFloat(c.lat).toFixed(3)}, {parseFloat(c.long).toFixed(3)}
                       </div>
                     )}
@@ -54,22 +61,5 @@ export default function CircuitsPage() {
   );
 }
 
-const card = {
-  textDecoration: 'none',
-  color: '#15151e',
-  display: 'flex',
-  background: '#fff',
-  borderLeft: '3px solid transparent',
-  transition: 'border-color 0.15s',
-  alignItems: 'stretch',
-};
-const iconWrap = {
-  background: '#15151e',
-  color: '#fff',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '1.5rem',
-  width: 56,
-  flexShrink: 0,
-};
+const card = { textDecoration: 'none', color: 'var(--text)', display: 'flex', alignItems: 'stretch', background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden', transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1), border-color 0.25s', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' };
+const iconArea = { background: 'var(--surface2)', width: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 };

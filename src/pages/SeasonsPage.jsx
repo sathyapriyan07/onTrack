@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '../hooks/useQuery';
 import { db } from '../services/db';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
+import { Icon } from '../components/Icons';
 
 export default function SeasonsPage() {
   const { data: seasons, loading, error } = useQuery(() => db.seasons.getAll());
@@ -14,27 +15,40 @@ export default function SeasonsPage() {
 
   return (
     <div className="page">
-      <h1 style={{ marginBottom: '1.75rem' }}>Seasons</h1>
+      <h1 style={{ marginBottom: '2rem' }}>Seasons</h1>
 
-      {/* Latest season featured */}
-      <div className="section-title">Latest Season</div>
-      <Link to={`/seasons/${latest.year}`} style={featuredCard}>
-        <div>
-          <div style={{ fontSize: '0.72rem', color: '#e10600', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Current Season</div>
-          <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{latest.year}</div>
+      <Link to={`/seasons/${latest.year}`} style={featuredCard}
+        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(225,6,0,0.5)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(225,6,0,0.2)'}
+      >
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 80% at 80% 50%, rgba(225,6,0,0.15) 0%, transparent 70%)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <Icon name="star" size={14} fill style={{ color: 'var(--accent)' }} />
+            <span style={{ fontSize: '0.68rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Current Season</span>
+          </div>
+          <div style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 900, color: 'var(--white)', lineHeight: 1, letterSpacing: '-0.04em' }}>
+            {latest.year}
+          </div>
         </div>
-        <div style={{ color: '#e10600', fontSize: '2rem', fontWeight: 900 }}>→</div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <Icon name="arrow_forward" size={28} style={{ color: 'var(--text3)' }} />
+        </div>
       </Link>
 
-      {/* All other seasons */}
       {rest.length > 0 && (
         <>
-          <div className="section-title" style={{ marginTop: '2rem' }}>All Seasons</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 1, background: '#e5e5e5', border: '1px solid #e5e5e5' }}>
-            {rest.map((s) => (
-              <Link key={s.id} to={`/seasons/${s.year}`} style={yearCard}>
-                <span style={{ fontSize: '1.5rem', fontWeight: 900 }}>{s.year}</span>
-                <span style={{ color: '#e10600', fontWeight: 800 }}>→</span>
+          <h2 style={{ marginTop: '2.5rem', marginBottom: '1.25rem', fontSize: '1rem', color: 'var(--text3)', fontWeight: 500 }}>
+            Previous Seasons
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
+            {rest.map(s => (
+              <Link key={s.id} to={`/seasons/${s.year}`} style={yearCard}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+              >
+                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--white)', letterSpacing: '-0.02em' }}>{s.year}</span>
+                <Icon name="chevron_right" size={18} style={{ color: 'var(--text3)' }} />
               </Link>
             ))}
           </div>
@@ -44,24 +58,5 @@ export default function SeasonsPage() {
   );
 }
 
-const featuredCard = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  background: '#15151e',
-  padding: '2rem 2.5rem',
-  textDecoration: 'none',
-  marginBottom: '0.5rem',
-  borderLeft: '5px solid #e10600',
-};
-const yearCard = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '1.1rem 1.25rem',
-  textDecoration: 'none',
-  color: '#15151e',
-  background: '#fff',
-  fontWeight: 700,
-  transition: 'background 0.15s',
-};
+const featuredCard = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', border: '1px solid rgba(225,6,0,0.2)', borderRadius: 20, padding: '2.5rem 3rem', textDecoration: 'none', position: 'relative', overflow: 'hidden', transition: 'border-color 0.25s' };
+const yearCard = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.1rem 1.25rem', textDecoration: 'none', color: 'var(--text)', background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, transition: 'background 0.2s, border-color 0.2s' };

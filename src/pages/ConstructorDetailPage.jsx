@@ -4,7 +4,8 @@ import { useQuery } from '../hooks/useQuery';
 import { db } from '../services/db';
 import { supabase } from '../services/supabase';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
-import { flagEmoji, positionSuffix } from '../utils/format';
+import { flagEmoji, positionSuffix, teamColor } from '../utils/format';
+import { Flag, Icon } from '../components/Icons';
 
 function fetchConstructorBySlug(slug) {
   return supabase.from('constructors').select('*').eq('constructor_id', slug).single();
@@ -98,29 +99,34 @@ export default function ConstructorDetailPage() {
   if (!constructor) return <EmptyState message="Constructor not found." />;
 
   const statCards = [
-    { label: 'Entries',       value: stats.entries,       icon: '🏁' },
-    { label: 'Championships', value: stats.championships, icon: '🏆', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
-    { label: 'Wins',          value: stats.wins,          icon: '🥇' },
-    { label: 'Podiums',       value: stats.podiums,       icon: '🏅' },
-    { label: 'Poles',         value: stats.poles,         icon: '⚡' },
-    { label: 'Fastest Laps',  value: stats.fastestLaps,   icon: '⏱' },
-    { label: 'Points',        value: stats.points,        icon: '📊' },
-    { label: 'DNFs',          value: stats.dnfs,          icon: '🔧' },
-    { label: 'DSQ',           value: stats.dsq,           icon: '🚫' },
-    { label: 'DNS',           value: stats.dns,           icon: '⛔' },
+    { label: 'Entries',       value: stats.entries,        icon: '🏁' },
+    { label: 'Championships', value: stats.championships,   icon: '🏆', highlight: stats.championships > 0, sub: stats.championshipYears.join(', ') || null },
+    { label: 'Wins',          value: stats.wins,            icon: '🥇' },
+    { label: 'Podiums',       value: stats.podiums,         icon: '🏅' },
+    { label: 'Poles',         value: stats.poles,           icon: '⚡' },
+    { label: 'Fastest Laps',  value: stats.fastestLaps,     icon: '⏱' },
+    { label: 'Points',        value: stats.points,          icon: '📊' },
+    { label: 'DNFs',          value: stats.dnfs,            icon: '🔧' },
+    { label: 'DSQ',           value: stats.dsq,             icon: '🚫' },
+    { label: 'DNS',           value: stats.dns,             icon: '⛔' },
   ];
 
   return (
     <div className="page">
       {/* Header */}
-      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap' }}>
         {constructor.logo_url && (
-          <img src={constructor.logo_url} alt={constructor.name}
-            style={{ width: 130, height: 75, objectFit: 'contain', flexShrink: 0 }} />
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '1rem 1.5rem', flexShrink: 0 }}>
+            <img src={constructor.logo_url} alt={constructor.name}
+              style={{ width: 130, height: 70, objectFit: 'contain', display: 'block' }} />
+          </div>
         )}
         <div>
-          <h1 style={{ margin: '0 0 4px' }}>{constructor.name}</h1>
-          <p style={{ color: '#666', margin: 0 }}>{flagEmoji(constructor.nationality)} {constructor.nationality}</p>
+          <h1 style={{ margin: '0 0 8px' }}>{constructor.name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+            <Flag nationality={constructor.nationality} height={14} />
+            <span style={{ color: 'var(--text3)', fontSize: '0.9rem' }}>{constructor.nationality}</span>
+          </div>
         </div>
       </div>
 
@@ -139,10 +145,10 @@ export default function ConstructorDetailPage() {
       {/* Tabs */}
       <div className="tabs">
         <button className={`tab-btn${tab === 'drivers' ? ' active' : ''}`} onClick={() => setTab('drivers')}>
-          👤 Drivers ({current.length + previous.length})
+          <Icon name="person" size={16} /> Drivers ({current.length + previous.length})
         </button>
         <button className={`tab-btn${tab === 'results' ? ' active' : ''}`} onClick={() => setTab('results')}>
-          📋 Results ({sorted.length})
+          <Icon name="format_list_bulleted" size={16} /> Results ({sorted.length})
         </button>
       </div>
 
@@ -209,16 +215,16 @@ export default function ConstructorDetailPage() {
                 </thead>
                 <tbody>
                   {filtered.map((r) => (
-                    <tr key={r.id} style={r.position === 1 ? { background: '#fff8f0' } : r.status === 'Disqualified' ? { background: '#fff0f0' } : {}}>
+                    <tr key={r.id} style={r.position === 1 ? { background: 'rgba(225,6,0,0.06)' } : r.status === 'Disqualified' ? { background: 'rgba(225,6,0,0.04)' } : {}}>
                       <td><Link to={`/seasons/${r.races?.seasons?.year}`} className="red-link">{r.races?.seasons?.year}</Link></td>
-                      <td style={{ color: '#888' }}>{r.races?.round}</td>
+                      <td style={{ color: 'var(--text3)' }}>{r.races?.round}</td>
                       <td><Link to={`/races/${r.race_id}`} className="red-link">{r.races?.race_name}</Link></td>
                       <td><Link to={`/drivers/${r.drivers?.driver_id}`} className="red-link">{r.drivers?.given_name} {r.drivers?.family_name}</Link></td>
-                      <td className="num" style={{ color: '#888' }}>{r.grid ?? '—'}</td>
+                      <td className="num" style={{ color: 'var(--text3)' }}>{r.grid ?? '—'}</td>
                       <td className="num" style={posStyle(r.position)}>{positionSuffix(r.position)}</td>
-                      <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? '#e10600' : '#aaa' }}>{r.points}</td>
+                      <td className="num" style={{ fontWeight: 700, color: r.points > 0 ? 'var(--accent)' : 'var(--text3)' }}>{r.points}</td>
                       <td className={statusClass(r.status)}>{r.status}</td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{r.fastest_lap_time || '—'}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text3)' }}>{r.fastest_lap_time || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -240,7 +246,7 @@ function DriverCard({ driver, seasons, isCurrent }) {
         {driver.code && <span className="code-badge">{driver.code}</span>}
         <div className="seasons">
           {seasons.length === 1 ? seasons[0] : `${seasons[0]} – ${seasons[seasons.length - 1]}`}
-          <span style={{ color: '#aaa' }}> · {seasons.length} season{seasons.length > 1 ? 's' : ''}</span>
+          <span style={{ color: 'var(--text3)' }}> · {seasons.length} season{seasons.length > 1 ? 's' : ''}</span>
         </div>
       </div>
     </Link>
@@ -248,9 +254,9 @@ function DriverCard({ driver, seasons, isCurrent }) {
 }
 
 function posStyle(pos) {
-  if (pos === 1) return { color: '#e10600', fontWeight: 700 };
-  if (pos <= 3) return { color: '#c47d00', fontWeight: 700 };
-  return { fontWeight: 600 };
+  if (pos === 1) return { color: 'var(--accent)', fontWeight: 700 };
+  if (pos <= 3) return { color: '#ffd60a', fontWeight: 700 };
+  return { fontWeight: 600, color: 'var(--text)' };
 }
 function statusClass(s) {
   if (!s || s === 'Finished' || s?.startsWith('+')) return 'status-ok';

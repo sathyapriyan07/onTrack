@@ -24,20 +24,37 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh', padding: '2rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '2rem', background: 'var(--bg)' }}>
       <div style={panel}>
-        <div style={panelHeader}>
-          <div style={{ fontSize: '0.72rem', color: '#e10600', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>onTRACK</div>
-          <h1 style={{ color: '#fff', margin: 0, fontSize: '1.5rem' }}>Admin Login</h1>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>onTRACK</div>
+          <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--white)' }}>Sign In</h1>
+          <p style={{ color: 'var(--text3)', fontSize: '0.88rem', marginTop: 8 }}>Admin access only</p>
         </div>
-        <form onSubmit={handleSubmit} style={formBody}>
-          {error && <div style={errorBox}>{error}</div>}
-          <label style={label}>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={input} />
-          <label style={label}>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={input} />
-          <button type="submit" disabled={loading} style={btn}>
-            {loading ? 'Signing in...' : 'Sign In'}
+
+        {error && (
+          <div style={{ background: 'rgba(225,6,0,0.1)', border: '1px solid rgba(225,6,0,0.3)', borderRadius: 10, padding: '0.75rem 1rem', color: '#ff6b6b', fontSize: '0.88rem', marginBottom: '1.25rem' }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={labelStyle}>Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={inputStyle}
+              onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.3)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Password</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={inputStyle}
+              onFocus={e => e.target.style.borderColor = 'rgba(255,255,255,0.3)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            />
+          </div>
+          <button type="submit" disabled={loading} style={btnStyle}>
+            {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
       </div>
@@ -45,14 +62,45 @@ export default function LoginPage() {
   );
 }
 
-const panel = { width: '100%', maxWidth: 400, border: '1px solid #e5e5e5', overflow: 'hidden' };
-const panelHeader = { background: '#15151e', padding: '1.75rem 2rem', borderBottom: '3px solid #e10600' };
-const formBody = { background: '#fff', padding: '1.75rem 2rem', display: 'flex', flexDirection: 'column', gap: 12 };
-const label = { fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#555' };
-const input = { padding: '0.6rem 0.75rem', border: '2px solid #e5e5e5', fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.15s' };
-const btn = {
-  background: '#e10600', color: '#fff', border: 'none', padding: '0.8rem',
-  cursor: 'pointer', fontWeight: 800, fontSize: '0.88rem', textTransform: 'uppercase',
-  letterSpacing: '0.06em', marginTop: 4,
+const panel = {
+  width: '100%',
+  maxWidth: 400,
+  background: 'var(--surface)',
+  border: '1px solid var(--border)',
+  borderRadius: 20,
+  padding: '2.5rem 2rem',
+  boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
 };
-const errorBox = { background: '#fff0f0', color: '#e10600', padding: '0.6rem 0.75rem', fontSize: '0.88rem', borderLeft: '3px solid #e10600' };
+const labelStyle = {
+  display: 'block',
+  fontWeight: 600,
+  fontSize: '0.78rem',
+  color: 'var(--text3)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  marginBottom: 7,
+};
+const inputStyle = {
+  width: '100%',
+  padding: '0.7rem 1rem',
+  background: 'var(--surface2)',
+  border: '1px solid var(--border)',
+  borderRadius: 10,
+  fontSize: '0.95rem',
+  color: 'var(--white)',
+  outline: 'none',
+  transition: 'border-color 0.2s',
+};
+const btnStyle = {
+  width: '100%',
+  background: 'var(--accent)',
+  color: '#fff',
+  border: 'none',
+  padding: '0.85rem',
+  borderRadius: 10,
+  cursor: 'pointer',
+  fontWeight: 700,
+  fontSize: '0.95rem',
+  marginTop: 6,
+  transition: 'opacity 0.2s',
+};

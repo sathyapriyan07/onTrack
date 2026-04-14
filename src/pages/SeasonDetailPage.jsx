@@ -5,6 +5,7 @@ import { db } from '../services/db';
 import { supabase } from '../services/supabase';
 import { LoadingSpinner, ErrorMessage, EmptyState } from '../components/StatusComponents';
 import { formatDate } from '../utils/format';
+import { Icon } from '../components/Icons';
 
 export default function SeasonDetailPage() {
   const { year } = useParams();
@@ -27,13 +28,23 @@ export default function SeasonDetailPage() {
 
   return (
     <div className="page">
-      <h1>Season {year}</h1>
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+          Formula 1
+        </div>
+        <h1 style={{ margin: 0 }}>Season {year}</h1>
+      </div>
+
       <div className="tabs">
-        {['races', 'drivers', 'constructors'].map((t) => (
-          <button key={t} className={`tab-btn${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
+        <button className={`tab-btn${tab === 'races' ? ' active' : ''}`} onClick={() => setTab('races')}>
+          <Icon name="flag" size={15} /> Races
+        </button>
+        <button className={`tab-btn${tab === 'drivers' ? ' active' : ''}`} onClick={() => setTab('drivers')}>
+          <Icon name="person" size={15} /> Drivers
+        </button>
+        <button className={`tab-btn${tab === 'constructors' ? ' active' : ''}`} onClick={() => setTab('constructors')}>
+          <Icon name="directions_car" size={15} /> Constructors
+        </button>
       </div>
 
       {tab === 'races' && (
@@ -44,10 +55,10 @@ export default function SeasonDetailPage() {
               <tbody>
                 {(races || []).map((r) => (
                   <tr key={r.id}>
-                    <td>{r.round}</td>
+                    <td style={{ color: 'var(--text3)', fontWeight: 600 }}>{r.round}</td>
                     <td><Link to={`/races/${r.id}`} className="red-link">{r.race_name}</Link></td>
-                    <td>{r.circuits?.name}, {r.circuits?.country}</td>
-                    <td>{formatDate(r.date)}</td>
+                    <td style={{ color: 'var(--text2)' }}>{r.circuits?.name}, {r.circuits?.country}</td>
+                    <td style={{ color: 'var(--text3)' }}>{formatDate(r.date)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -63,11 +74,11 @@ export default function SeasonDetailPage() {
               <thead><tr><th>Pos</th><th>Driver</th><th className="num">Points</th><th className="num">Wins</th></tr></thead>
               <tbody>
                 {(driverStandings || []).map((s) => (
-                  <tr key={s.id}>
-                    <td style={{ fontWeight: 700 }}>{s.position}</td>
+                  <tr key={s.id} style={s.position === 1 ? { background: 'rgba(225,6,0,0.06)' } : {}}>
+                    <td style={{ fontWeight: 700, color: s.position <= 3 ? 'var(--accent)' : 'var(--text)' }}>{s.position}</td>
                     <td><Link to={`/drivers/${s.drivers?.driver_id}`} className="red-link">{s.drivers?.given_name} {s.drivers?.family_name}</Link></td>
-                    <td className="num" style={{ fontWeight: 700, color: '#e10600' }}>{s.points}</td>
-                    <td className="num">{s.wins}</td>
+                    <td className="num" style={{ fontWeight: 700, color: 'var(--accent)' }}>{s.points}</td>
+                    <td className="num" style={{ color: 'var(--text2)' }}>{s.wins}</td>
                   </tr>
                 ))}
               </tbody>
@@ -83,11 +94,11 @@ export default function SeasonDetailPage() {
               <thead><tr><th>Pos</th><th>Constructor</th><th className="num">Points</th><th className="num">Wins</th></tr></thead>
               <tbody>
                 {(constructorStandings || []).map((s) => (
-                  <tr key={s.id}>
-                    <td style={{ fontWeight: 700 }}>{s.position}</td>
+                  <tr key={s.id} style={s.position === 1 ? { background: 'rgba(225,6,0,0.06)' } : {}}>
+                    <td style={{ fontWeight: 700, color: s.position <= 3 ? 'var(--accent)' : 'var(--text)' }}>{s.position}</td>
                     <td><Link to={`/constructors/${s.constructors?.constructor_id}`} className="red-link">{s.constructors?.name}</Link></td>
-                    <td className="num" style={{ fontWeight: 700, color: '#e10600' }}>{s.points}</td>
-                    <td className="num">{s.wins}</td>
+                    <td className="num" style={{ fontWeight: 700, color: 'var(--accent)' }}>{s.points}</td>
+                    <td className="num" style={{ color: 'var(--text2)' }}>{s.wins}</td>
                   </tr>
                 ))}
               </tbody>
